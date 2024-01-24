@@ -7,21 +7,21 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Function to list and select AWS profiles
-select_aws_profile() {
-    echo -e "${BLUE}AWS_PROFILE not set. Listing available profiles...${NC}"
-    profiles_config=$(awk '/^\[/{gsub(/\[|\]/,"");print}' ~/.aws/config | sed 's/^profile //')
-    profiles_credentials=$(awk '/^\[/{gsub(/\[|\]/,"");print}' ~/.aws/credentials)
-    profiles=$(echo -e "$profiles_config\n$profiles_credentials" | sort -u)
-    selected_profile=$(echo "$profiles" | fzf --height 20% --header "Select an AWS Profile")
 
-    if [[ ! -z "$selected_profile" ]]; then
-        export AWS_PROFILE=$selected_profile
-        echo -e "${GREEN}Selected AWS profile: $AWS_PROFILE${NC}"
-    else
-        echo -e "${RED}No profile selected. Exiting.${NC}"
-        exit 1
-    fi
-}
+echo -e "${BLUE}AWS_PROFILE not set. Listing available profiles...${NC}"
+profiles_config=$(awk '/^\[/{gsub(/\[|\]/,"");print}' ~/.aws/config | sed 's/^profile //')
+profiles_credentials=$(awk '/^\[/{gsub(/\[|\]/,"");print}' ~/.aws/credentials)
+profiles=$(echo -e "$profiles_config\n$profiles_credentials" | sort -u)
+selected_profile=$(echo "$profiles" | fzf --height 20% --header "Select an AWS Profile")
+
+if [[ ! -z "$selected_profile" ]]; then
+    export AWS_PROFILE=$selected_profile
+    echo -e "${GREEN}Selected AWS profile: $AWS_PROFILE${NC}"
+else
+    echo -e "${RED}No profile selected. Exiting.${NC}"
+    exit 1
+fi
+
 
 # The rest of the script for listing and connecting to EC2 instances
 instances=$(aws ec2 describe-instances \
