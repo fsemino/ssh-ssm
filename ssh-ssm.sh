@@ -9,7 +9,9 @@ NC='\033[0m' # No Color
 # Function to list and select AWS profiles
 select_aws_profile() {
     echo -e "${BLUE}AWS_PROFILE not set. Listing available profiles...${NC}"
-    profiles=$(awk '/^\[/{gsub(/\[|\]/,"");print}' ~/.aws/config | sed 's/^profile //')
+    profiles_config=$(awk '/^\[/{gsub(/\[|\]/,"");print}' ~/.aws/config | sed 's/^profile //')
+    profiles_credentials=$(awk '/^\[/{gsub(/\[|\]/,"");print}' ~/.aws/credentials)
+    profiles=$(echo -e "$profiles_config\n$profiles_credentials" | sort -u)
     selected_profile=$(echo "$profiles" | fzf --height 20% --header "Select an AWS Profile")
 
     if [[ ! -z "$selected_profile" ]]; then
@@ -20,11 +22,6 @@ select_aws_profile() {
         exit 1
     fi
 }
-
-# Check if AWS_PROFILE is set, if not call select_aws_profile function
-if [[ -z "$AWS_PROFILE" ||  -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" ]]; then
-    select_aws_profile
-fi
 
 # The rest of the script for listing and connecting to EC2 instances
 instances=$(aws ec2 describe-instances \

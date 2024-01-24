@@ -46,10 +46,9 @@ chmod  +x  ssh-ssm.sh
 
 ```bash
 
-./aws_profile_selector.sh
+./ssh-ssm.sh
 ```
 
-> You can set AWS_PROFILE or your Credentials using Env vars or
 > Follow the on-screen instructions to select an AWS profile and EC2
 > instance.
 
